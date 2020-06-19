@@ -1,4 +1,4 @@
-package com.coding.girl.adapter;
+package com.coding.girl.divider;
 
 import android.content.Context;
 import android.content.res.TypedArray;

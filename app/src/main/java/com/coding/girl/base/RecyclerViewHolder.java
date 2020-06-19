@@ -1,9 +1,5 @@
 package com.coding.girl.base;
 
-import android.content.Context;
-
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +7,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * @author cginechen
@@ -20,7 +18,7 @@ import android.widget.TextView;
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> mViews;
 
-    public RecyclerViewHolder(Context context, View itemView) {
+    public RecyclerViewHolder(View itemView) {
         super(itemView);
         mViews = new SparseArray<>();
     }

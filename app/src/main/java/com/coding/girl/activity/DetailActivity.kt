@@ -2,48 +2,70 @@ package com.coding.girl.activity
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.bumptech.glide.Glide
 import com.coding.girl.R
-import kotlinx.android.synthetic.main.activity_detail.*
+import com.coding.girl.base.BaseActivity
+import com.coding.girl.util.BitmapUtil
+import kotlinx.android.synthetic.main.activity_details.*
 
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : BaseActivity() {
     companion object {
-        private const val TAG = "DetailActivity"
         private const val REQ_PERMISSION = 200
     }
 
-    lateinit var bitmap: Bitmap
-    var pic_url = ""
-    var pic_name = ""
+    private lateinit var mBitmap: Bitmap
+    private var mPicUrl = ""
+    private var mPicName = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
-        if (intent != null) {
-            if (intent.extras != null) {
-                pic_url = intent.extras!!.getString("url", "")
-                pic_name = intent.extras!!.getString("name", "") + ".jpg"
-            }
+    override fun bindLayout(): Int {
+        return R.layout.activity_details
+    }
+
+    override fun initDataBeforeContentView(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            //requestWindowFeature(Window.FEATURE_SWIPE_TO_DISMISS)
+        }
+    }
+
+    override fun initData(savedInstanceState: Bundle?) {
+        if (intent != null && intent.extras != null) {
+            mPicUrl = intent.extras!!.getString("url", "")
+            mPicName = intent.extras!!.getString("name", "")
+            if (!mPicName.endsWith(".jpg"))
+                mPicName = "$mPicName.jpg"
         }
 
         Glide.with(this)
-            .load(pic_url)
-            .into(iv_detail_girl)
-        iv_detail_girl.setOnLongClickListener { v ->
-            bitmap = ((v as ImageView).drawable as BitmapDrawable).bitmap
+            .load(mPicUrl)
+            .into(img_detail_girl)
+    }
+
+    override fun setListener() {
+        tv_round.setOnClickListener {
+            val roundBitmap = RoundedBitmapDrawableFactory.create(
+                resources,
+                BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
+            )
+            roundBitmap.cornerRadius = 500f
+            Glide.with(this)
+                .load(roundBitmap)
+                .into(img_detail_girl)
+        }
+        tv_store_pic.setOnClickListener {
+            mBitmap = BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
             if (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -55,19 +77,18 @@ class DetailActivity : AppCompatActivity() {
                 )
             } else {
                 addBitmapToAlbum(
-                    bitmap,
-                    pic_name,
+                    mBitmap,
+                    mPicName,
                     "image/jpeg",
                     Bitmap.CompressFormat.JPEG
                 )
             }
-            true
         }
     }
 
-    fun addBitmapToAlbum(
+    private fun addBitmapToAlbum(
         bitmap: Bitmap,
-        displayName: String?,
+        displayName: String,
         mimeType: String,
         compressFormat: Bitmap.CompressFormat
     ) {
@@ -89,16 +110,21 @@ class DetailActivity : AppCompatActivity() {
                 if (outputStream != null) {
                     bitmap.compress(compressFormat, 100, outputStream)
                     outputStream.close()
+                    sendBroadcast(
+                        Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse("file://" + Environment.getExternalStorageDirectory())
+                        )
+                    )
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG,"e:$e")
+            Log.e(TAG, "e:$e")
             Toast.makeText(this, "未知错误，保存失败", Toast.LENGTH_SHORT).show()
         }
 
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -108,10 +134,10 @@ class DetailActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQ_PERMISSION ->
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     addBitmapToAlbum(
-                        bitmap,
-                        pic_name,
+                        mBitmap,
+                        mPicName,
                         "image/jpeg",
                         Bitmap.CompressFormat.JPEG
                     )
@@ -120,4 +146,5 @@ class DetailActivity : AppCompatActivity() {
                 }
         }
     }
+
 }

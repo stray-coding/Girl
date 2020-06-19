@@ -2,7 +2,9 @@ package com.coding.girl.base;
 
 
 import android.content.Context;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +36,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
 
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
-        final RecyclerViewHolder holder = new RecyclerViewHolder(mContext,
-                mInflater.inflate(getItemLayoutId(viewType), parent, false));
+        final RecyclerViewHolder holder = new RecyclerViewHolder(mInflater.inflate(getItemLayoutId(viewType), parent, false));
         if (mClickListener != null) {
             holder.itemView.setOnClickListener(v -> mClickListener.onItemClick(holder.itemView, holder.getLayoutPosition()));
         }
@@ -73,10 +74,11 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         notifyItemRangeChanged(pos, mData.size() - pos);
     }
 
-    public void setData(List<T> list){
+    public void setData(List<T> list) {
         mData = (list != null) ? list : new ArrayList<T>();
         notifyDataSetChanged();
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         mClickListener = listener;
     }
@@ -85,7 +87,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         mLongClickListener = listener;
     }
 
-    @SuppressWarnings("SameReturnValue")
     abstract public int getItemLayoutId(int viewType);
 
     abstract public void bindData(RecyclerViewHolder holder, int position, T item);
