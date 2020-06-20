@@ -35,9 +35,7 @@ class DetailActivity : BaseActivity() {
     }
 
     override fun initDataBeforeContentView(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            //requestWindowFeature(Window.FEATURE_SWIPE_TO_DISMISS)
-        }
+
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -110,12 +108,6 @@ class DetailActivity : BaseActivity() {
                 if (outputStream != null) {
                     bitmap.compress(compressFormat, 100, outputStream)
                     outputStream.close()
-                    sendBroadcast(
-                        Intent(
-                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                            Uri.parse("file://" + Environment.getExternalStorageDirectory())
-                        )
-                    )
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show()
                 }
             }

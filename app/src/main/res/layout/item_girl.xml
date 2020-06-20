@@ -8,18 +8,17 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <ImageView
+    <com.coding.girl.view.RoundImageView
         android:id="@+id/img_girl"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_weight="1"
-        android:background="@drawable/bg_radius"
-        android:padding="1.5dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tv_msg"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_weight="1"

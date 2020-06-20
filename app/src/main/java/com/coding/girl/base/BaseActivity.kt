@@ -36,16 +36,13 @@ abstract class BaseActivity : AppCompatActivity() {
     /**
      * 是否禁止旋转屏幕
      */
-    private var isAllowScreenRotate = true
+    private var isAllowScreenRotate = false
 
     /**
      * 当前Activity渲染的视图View
      */
     private var mContextView: View? = null
 
-    /**
-     * 日志输出标志
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -53,14 +50,14 @@ abstract class BaseActivity : AppCompatActivity() {
         if (mContextView == null) mContextView = LayoutInflater.from(this).inflate(bindLayout(), null)
         initDataBeforeContentView(savedInstanceState)
         if (mAllowFullScreen) {
+            //隐藏action bar
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             //隐藏顶部状态栏
             window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }
         if (isSetStatusBar) steepStatusBar()
+        if (!isAllowScreenRotate) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(mContextView)
-        if (!isAllowScreenRotate) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-
         initData(savedInstanceState)
         setListener()
         mContext = this
@@ -72,18 +69,12 @@ abstract class BaseActivity : AppCompatActivity() {
     @TargetApi(19)
     private fun steepStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            StatusBarUtils.setLightStatusBar(this, true);//黑色文字
-            StatusBarUtils.setStatusBarColor(this, R.color.white);//白色背景
+            StatusBarUtils.setLightStatusBar(this, true)//黑色文字
+            StatusBarUtils.setStatusBarColor(this, R.color.white)//白色背景
         } else {
             //6.0以下默认白色文字
-            StatusBarUtils.setStatusBarColor(this, R.color.black);//黑色背景
+            StatusBarUtils.setStatusBarColor(this, R.color.black)//黑色背景
         }
-/*        //透明状态栏
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        // 透明导航栏
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);*/
     }
 
     /**

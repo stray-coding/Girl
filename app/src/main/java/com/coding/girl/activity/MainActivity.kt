@@ -3,8 +3,6 @@ package com.coding.girl.activity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.core.graphics.drawable.RoundedBitmapDrawable
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.coding.girl.R
 import com.coding.girl.adapter.GirlAdapter
@@ -19,6 +17,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 class MainActivity : BaseActivity() {
+    companion object {
+        const val mCount = 20
+    }
 
     private val mDataList: ArrayList<GirlBean.DataBean> = arrayListOf()
     private lateinit var mAdapter: GirlAdapter
@@ -81,7 +82,7 @@ class MainActivity : BaseActivity() {
     }
 
     interface GetOnePic {
-        @GET("v2/random/category/Girl/type/Girl/count/1")
+        @GET("v2/random/category/Girl/type/Girl/count/$mCount")
         fun getCall(): Call<GirlBean>
     }
 
