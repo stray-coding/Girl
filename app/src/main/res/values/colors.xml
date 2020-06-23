@@ -6,5 +6,8 @@
     <color name="transparent">#00000000</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="green">#009688</color>
+    <color name="bule">#00BCD4</color>
+
 
 </resources>

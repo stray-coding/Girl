@@ -2,10 +2,8 @@ package com.coding.girl.activity
 
 import android.Manifest
 import android.content.ContentValues
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -52,6 +50,9 @@ class DetailActivity : BaseActivity() {
     }
 
     override fun setListener() {
+        tv_back.setOnClickListener {
+            finish()
+        }
         tv_round.setOnClickListener {
             val roundBitmap = RoundedBitmapDrawableFactory.create(
                 resources,

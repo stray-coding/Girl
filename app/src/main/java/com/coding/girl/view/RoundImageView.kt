@@ -7,6 +7,9 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.graphics.drawable.RoundedBitmapDrawable
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.coding.girl.R
 import kotlin.math.min
 
@@ -29,30 +32,32 @@ class RoundImageView(ctx: Context, attr: AttributeSet?, defStyleAttr: Int) :
     private var mWidth: Float = 0f
     private var mHeight: Float = 0f
 
-    private var leftTopRadius = 0f
-    private var rightTopRadius = 0f
-    private var rightBottomRadius = 0f
-    private var leftBottomRadius = 0f
+    private var leftTopRadius: Float
+    private var rightTopRadius: Float
+    private var rightBottomRadius: Float
+    private var leftBottomRadius: Float
+    private var mPath: Path
+    private var maxRadius = 0f
+    private var isCircleCrop :Boolean
 
     init {
         val array = ctx.obtainStyledAttributes(attr, R.styleable.RoundImageView)
-        try {
-            leftTopRadius = dp2px(array.getInt(R.styleable.RoundImageView_leftTopRadius, 5))
-            rightTopRadius = dp2px(array.getInt(R.styleable.RoundImageView_rightTopRadius, 5))
-            rightBottomRadius = dp2px(array.getInt(R.styleable.RoundImageView_rightBottomRadius, 5))
-            leftBottomRadius = dp2px(array.getInt(R.styleable.RoundImageView_leftBottomRadius, 5))
-            if (array.hasValue(R.styleable.RoundImageView_radius)) {
-                val radius = dp2px(array.getInt(R.styleable.RoundImageView_radius, 5))
-                leftTopRadius = radius
-                rightTopRadius = radius
-                rightBottomRadius = radius
-                leftBottomRadius = radius
-            }else{
-                Log.i(TAG,"array not has attr radius")
-            }
-        } finally {
-            array.recycle()
+        isCircleCrop = array.getBoolean(R.styleable.RoundImageView_isCircle, false)
+        leftTopRadius = dp2px(array.getInt(R.styleable.RoundImageView_leftTopRadius, 5))
+        rightTopRadius = dp2px(array.getInt(R.styleable.RoundImageView_rightTopRadius, 5))
+        rightBottomRadius = dp2px(array.getInt(R.styleable.RoundImageView_rightBottomRadius, 5))
+        leftBottomRadius = dp2px(array.getInt(R.styleable.RoundImageView_leftBottomRadius, 5))
+        if (array.hasValue(R.styleable.RoundImageView_radius)) {
+            val radius = dp2px(array.getInt(R.styleable.RoundImageView_radius, 5))
+            leftTopRadius = radius
+            rightTopRadius = radius
+            rightBottomRadius = radius
+            leftBottomRadius = radius
+        } else {
+            Log.i(TAG, "array not has attr radius")
         }
+        array.recycle()
+        mPath = Path()
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -63,27 +68,32 @@ class RoundImageView(ctx: Context, attr: AttributeSet?, defStyleAttr: Int) :
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
-        val maxRadius = min(mHeight, mWidth) / 2
+        maxRadius = min(mHeight, mWidth) / 2
         Log.i(TAG, "maxRadius:$maxRadius")
-        leftTopRadius = if (leftTopRadius < maxRadius) leftTopRadius else maxRadius
-        rightTopRadius = if (rightTopRadius < maxRadius) rightTopRadius else maxRadius
-        rightBottomRadius = if (rightBottomRadius < maxRadius) rightBottomRadius else maxRadius
-        leftBottomRadius = if (leftBottomRadius < maxRadius) leftBottomRadius else maxRadius
-        Log.i(
-            TAG,
-            "leftTopRadius:$leftTopRadius,rightTopRadius:$rightTopRadius,rightBottomRadius:$rightBottomRadius,leftBottomRadius:$leftBottomRadius"
-        )
-        val path = Path()
-        path.moveTo(leftTopRadius, 0f)
-        path.lineTo(width - rightTopRadius, 0f)
-        path.quadTo(mWidth, 0f, mWidth, rightTopRadius)
-        path.lineTo(mWidth, mHeight - rightBottomRadius)
-        path.quadTo(mWidth, mHeight, mWidth - rightBottomRadius, mHeight)
-        path.lineTo(leftBottomRadius, mHeight)
-        path.quadTo(0f, mHeight, 0f, mHeight - leftBottomRadius)
-        path.lineTo(0f, leftTopRadius)
-        path.quadTo(0f, 0f, leftTopRadius, 0f)
-        canvas?.clipPath(path)
+        if (isCircleCrop) {
+            Log.i(TAG, "circle View")
+            mPath.addCircle(mWidth / 2, mHeight / 2, maxRadius, Path.Direction.CCW)
+            canvas?.clipPath(mPath)
+        } else {
+            leftTopRadius = if (leftTopRadius < maxRadius) leftTopRadius else maxRadius
+            rightTopRadius = if (rightTopRadius < maxRadius) rightTopRadius else maxRadius
+            rightBottomRadius = if (rightBottomRadius < maxRadius) rightBottomRadius else maxRadius
+            leftBottomRadius = if (leftBottomRadius < maxRadius) leftBottomRadius else maxRadius
+            Log.i(
+                TAG,
+                "leftTopRadius:$leftTopRadius,rightTopRadius:$rightTopRadius,rightBottomRadius:$rightBottomRadius,leftBottomRadius:$leftBottomRadius"
+            )
+            mPath.moveTo(leftTopRadius, 0f)
+            mPath.lineTo(width - rightTopRadius, 0f)
+            mPath.quadTo(mWidth, 0f, mWidth, rightTopRadius)
+            mPath.lineTo(mWidth, mHeight - rightBottomRadius)
+            mPath.quadTo(mWidth, mHeight, mWidth - rightBottomRadius, mHeight)
+            mPath.lineTo(leftBottomRadius, mHeight)
+            mPath.quadTo(0f, mHeight, 0f, mHeight - leftBottomRadius)
+            mPath.lineTo(0f, leftTopRadius)
+            mPath.quadTo(0f, 0f, leftTopRadius, 0f)
+        }
+        canvas?.clipPath(mPath)
         super.onDraw(canvas)
     }
 
@@ -101,6 +111,11 @@ class RoundImageView(ctx: Context, attr: AttributeSet?, defStyleAttr: Int) :
         rightTopRadius = dp2px(rightTop)
         rightBottomRadius = dp2px(rightBottom)
         leftBottomRadius = dp2px(leftBottom)
+        postInvalidate()
+    }
+
+    fun setCircleView(isCircle: Boolean) {
+        isCircleCrop = isCircle
         postInvalidate()
     }
 

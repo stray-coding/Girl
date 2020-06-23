@@ -6,5 +6,6 @@
         <attr name="rightBottomRadius" format="integer" />
         <attr name="leftBottomRadius" format="integer" />
         <attr name="radius" format="integer" />
+        <attr name="isCircle" format="boolean"/>
     </declare-styleable>
 </resources>

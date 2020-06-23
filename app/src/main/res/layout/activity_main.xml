@@ -2,13 +2,21 @@
 <com.coding.girl.view.WindowInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
-    <androidx.recyclerview.widget.RecyclerView
-        android:fitsSystemWindows="true"
-        android:id="@+id/rv_list"
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:overScrollMode="always" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </com.coding.girl.view.WindowInsetsFrameLayout>

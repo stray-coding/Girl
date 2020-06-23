@@ -5,14 +5,27 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.DetailActivity">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:fitsSystemWindows="true">
+            <com.coding.girl.view.RoundImageView
+                android:id="@+id/img_detail_girl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                tools:srcCompat="@tools:sample/avatars" />
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="start|top"
+                android:layout_marginStart="10dp"
+                android:text="Back"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:gravity="center" />
             <TextView
                 android:id="@+id/tv_round"
                 android:layout_width="wrap_content"
@@ -36,13 +49,7 @@
                 android:gravity="center" />
 
         </FrameLayout>
-        <com.coding.girl.view.RoundImageView
-            android:id="@+id/img_detail_girl"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            tools:srcCompat="@tools:sample/avatars" />
-    </LinearLayout>
+
+
 </com.coding.girl.view.WindowInsetsFrameLayout>
 
