@@ -3,11 +3,9 @@ package com.coding.girl.activity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.core.view.ViewPropertyAnimatorListener
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager.widget.ViewPager
 import com.coding.girl.R
 import com.coding.girl.adapter.GirlAdapter
 import com.coding.girl.base.BaseActivity
@@ -18,20 +16,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Field
 import retrofit2.http.GET
+import retrofit2.http.Url
+
 
 class MainActivity : BaseActivity() {
-    companion object {
+    private var isLoadData = false
 
-    }
-
+    /*获取Girl图片URL的相关参数*/
     private val mCategory = "Girl"
     private val mType = "Girl"
     private val mCount = 8
     private var mPage = 1
-    private var isLoadData = false
-
 
     private val mDataList: ArrayList<GirlBean.DataBean> = arrayListOf()
     private lateinit var mAdapter: GirlAdapter
@@ -40,11 +36,11 @@ class MainActivity : BaseActivity() {
         return R.layout.activity_main
     }
 
-    override fun initDataBeforeContentView(savedInstanceState: Bundle?) {
+    override fun initDataBeforeSetContentView(savedInstanceState: Bundle?) {
 
     }
 
-    override fun initData(savedInstanceState: Bundle?) {
+    override fun initDataAfterSetContentView(savedInstanceState: Bundle?) {
         loadPic(false)
         val spanCount = 2
         rv_list.layoutManager =
@@ -108,8 +104,8 @@ class MainActivity : BaseActivity() {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val request = retrofit.create(GetOnePic::class.java)
-            //val call = request.getCall(mCategory, mType, mPage, mCount)
-            val call = request.getCall()
+            val url = getRequestUrl(mCategory, mType, mPage, mCount)
+            val call = request.getCall(url)
             call.enqueue(object : Callback<GirlBean> {
                 override fun onResponse(call: Call<GirlBean>, response: Response<GirlBean>) {
                     Log.i(TAG, "{$response}")
@@ -151,15 +147,12 @@ class MainActivity : BaseActivity() {
     }
 
     interface GetOnePic {
-        @GET("v2/data/category/Girl/type/Girl/page/3/count/5")
-        //v2/data/category/<category>/type/<type>/page/<page>/count/<count>
-        //v2/random/category/Girl/type/Girl/count/$mCount
-        fun getCall(
-            /*@Field("<category>") category: String,
-            @Field("<type>") type: String,
-            @Field("<page>") page: Int,
-            @Field("<count>") count: Int*/
-        ): Call<GirlBean>
+        @GET
+        fun getCall(@Url url: String): Call<GirlBean>
+    }
+
+    private fun getRequestUrl(category: String, type: String, page: Int, count: Int): String {
+        return "v2/data/category/$category/type/$type/page/$page/count/$count"
     }
 
 }

@@ -7,9 +7,6 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.graphics.drawable.RoundedBitmapDrawable
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.coding.girl.R
 import kotlin.math.min
 
@@ -31,14 +28,13 @@ class RoundImageView(ctx: Context, attr: AttributeSet?, defStyleAttr: Int) :
 
     private var mWidth: Float = 0f
     private var mHeight: Float = 0f
-
+    private var isCircleCrop: Boolean
     private var leftTopRadius: Float
     private var rightTopRadius: Float
     private var rightBottomRadius: Float
     private var leftBottomRadius: Float
-    private var mPath: Path
     private var maxRadius = 0f
-    private var isCircleCrop :Boolean
+    private var mPath: Path
 
     init {
         val array = ctx.obtainStyledAttributes(attr, R.styleable.RoundImageView)
@@ -118,7 +114,6 @@ class RoundImageView(ctx: Context, attr: AttributeSet?, defStyleAttr: Int) :
         isCircleCrop = isCircle
         postInvalidate()
     }
-
 
     private fun dp2px(value: Int): Float {
         val scale = context.applicationContext.resources.displayMetrics.density

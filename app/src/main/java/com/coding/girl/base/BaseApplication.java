@@ -9,15 +9,15 @@ import android.content.Context;
  */
 public class BaseApplication extends Application {
 
-    private Context context;
+    private Context appContext;
 
     public Context getContext() {
-        return context;
+        return appContext;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        context = getApplicationContext();
+        appContext = getApplicationContext();
     }
 }

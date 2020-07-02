@@ -32,11 +32,11 @@ class DetailActivity : BaseActivity() {
         return R.layout.activity_details
     }
 
-    override fun initDataBeforeContentView(savedInstanceState: Bundle?) {
+    override fun initDataBeforeSetContentView(savedInstanceState: Bundle?) {
 
     }
 
-    override fun initData(savedInstanceState: Bundle?) {
+    override fun initDataAfterSetContentView(savedInstanceState: Bundle?) {
         if (intent != null && intent.extras != null) {
             mPicUrl = intent.extras!!.getString("url", "")
             mPicName = intent.extras!!.getString("name", "")
@@ -75,26 +75,16 @@ class DetailActivity : BaseActivity() {
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_PERMISSION
                 )
             } else {
-                addBitmapToAlbum(
-                    mBitmap,
-                    mPicName,
-                    "image/jpeg",
-                    Bitmap.CompressFormat.JPEG
-                )
+                addBitmapToAlbum(mBitmap, mPicName)
             }
         }
     }
 
-    private fun addBitmapToAlbum(
-        bitmap: Bitmap,
-        displayName: String,
-        mimeType: String,
-        compressFormat: Bitmap.CompressFormat
-    ) {
+    private fun addBitmapToAlbum(bitmap: Bitmap, displayName: String) {
         try {
             val values = ContentValues()
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
-            values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            values.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
             } else {
@@ -107,7 +97,7 @@ class DetailActivity : BaseActivity() {
             if (uri != null) {
                 val outputStream = contentResolver.openOutputStream(uri)
                 if (outputStream != null) {
-                    bitmap.compress(compressFormat, 100, outputStream)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     outputStream.close()
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show()
                 }
@@ -116,7 +106,6 @@ class DetailActivity : BaseActivity() {
             Log.e(TAG, "e:$e")
             Toast.makeText(this, "未知错误，保存失败", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     override fun onRequestPermissionsResult(
@@ -128,12 +117,7 @@ class DetailActivity : BaseActivity() {
         when (requestCode) {
             REQ_PERMISSION ->
                 if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    addBitmapToAlbum(
-                        mBitmap,
-                        mPicName,
-                        "image/jpeg",
-                        Bitmap.CompressFormat.JPEG
-                    )
+                    addBitmapToAlbum(mBitmap, mPicName)
                 } else {
                     Toast.makeText(this, "权限不足，保存失败", Toast.LENGTH_SHORT).show()
                 }

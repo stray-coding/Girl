@@ -1,7 +1,6 @@
 package com.coding.girl.base
 
 import android.annotation.TargetApi
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
@@ -20,8 +19,6 @@ import com.coding.girl.util.StatusBarUtils
  */
 abstract class BaseActivity : AppCompatActivity() {
     val TAG: String = javaClass.name
-
-    var mContext: Context? = null
 
     /**
      * 是否沉浸状态栏
@@ -47,8 +44,9 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         Log.d(TAG, "BaseActivity-->onCreate()")
-        if (mContextView == null) mContextView = LayoutInflater.from(this).inflate(bindLayout(), null)
-        initDataBeforeContentView(savedInstanceState)
+        if (mContextView == null) mContextView =
+            LayoutInflater.from(this).inflate(bindLayout(), null)
+        initDataBeforeSetContentView(savedInstanceState)
         if (mAllowFullScreen) {
             //隐藏action bar
             requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -58,9 +56,8 @@ abstract class BaseActivity : AppCompatActivity() {
         if (isSetStatusBar) steepStatusBar()
         if (!isAllowScreenRotate) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(mContextView)
-        initData(savedInstanceState)
+        initDataAfterSetContentView(savedInstanceState)
         setListener()
-        mContext = this
     }
 
     /**
@@ -87,8 +84,8 @@ abstract class BaseActivity : AppCompatActivity() {
     /**
      * [加载数据]
      */
-    abstract fun initDataBeforeContentView(savedInstanceState: Bundle?)
-    abstract fun initData(savedInstanceState: Bundle?)
+    abstract fun initDataBeforeSetContentView(savedInstanceState: Bundle?)
+    abstract fun initDataAfterSetContentView(savedInstanceState: Bundle?)
     abstract fun setListener()
 
     /**
@@ -186,7 +183,7 @@ abstract class BaseActivity : AppCompatActivity() {
      *
      * @param isAllowScreenRotate
      */
-    public fun setScreenRotate(isAllowScreenRotate: Boolean) {
+    fun setScreenRotate(isAllowScreenRotate: Boolean) {
         this.isAllowScreenRotate = isAllowScreenRotate
     }
 
@@ -195,7 +192,7 @@ abstract class BaseActivity : AppCompatActivity() {
      *
      * @param allowFullScreen
      */
-    public fun setAllowFullScreen(allowFullScreen: Boolean) {
+    fun setAllowFullScreen(allowFullScreen: Boolean) {
         mAllowFullScreen = allowFullScreen
     }
 
@@ -204,7 +201,7 @@ abstract class BaseActivity : AppCompatActivity() {
      *
      * @param isSetStatusBar
      */
-    public fun setSteepStatusBar(isSetStatusBar: Boolean) {
+    fun setSteepStatusBar(isSetStatusBar: Boolean) {
         this.isSetStatusBar = isSetStatusBar
     }
 }
