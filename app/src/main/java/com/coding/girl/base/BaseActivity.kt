@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.coding.girl.R
 import com.coding.girl.util.StatusBarUtils
@@ -18,7 +19,7 @@ import com.coding.girl.util.StatusBarUtils
  * Created by HDL on 2018/1/15.
  */
 abstract class BaseActivity : AppCompatActivity() {
-    val TAG: String = javaClass.name
+    protected val TAG: String = javaClass.name
 
     /**
      * 是否沉浸状态栏
@@ -203,5 +204,9 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     fun setSteepStatusBar(isSetStatusBar: Boolean) {
         this.isSetStatusBar = isSetStatusBar
+    }
+
+    protected fun showTip(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

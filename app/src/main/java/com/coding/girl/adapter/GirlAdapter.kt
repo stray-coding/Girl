@@ -5,7 +5,7 @@ import com.bumptech.glide.Glide
 import com.coding.girl.R
 import com.coding.girl.base.BaseRecyclerAdapter
 import com.coding.girl.base.RecyclerViewHolder
-import com.coding.girl.bean.GirlBean
+import com.coding.girl.bean.PageGirlBean
 
 /**
  * @author: Coding.He
@@ -13,8 +13,8 @@ import com.coding.girl.bean.GirlBean
  * @emil: 229101253@qq.com
  * @des:RecycleView的图片适配器
  */
-class GirlAdapter(context: Context, dataList: List<GirlBean.DataBean>) :
-    BaseRecyclerAdapter<GirlBean.DataBean>(context, dataList) {
+class GirlAdapter(context: Context, dataList: List<PageGirlBean.DataBean>) :
+    BaseRecyclerAdapter<PageGirlBean.DataBean>(context, dataList) {
     override fun getItemLayoutId(viewType: Int): Int {
         return R.layout.item_girl
     }
@@ -22,7 +22,7 @@ class GirlAdapter(context: Context, dataList: List<GirlBean.DataBean>) :
     override fun bindData(
         holder: RecyclerViewHolder,
         position: Int,
-        item: GirlBean.DataBean
+        item: PageGirlBean.DataBean
     ) {
         val img = holder.getImageView(R.id.img_girl)
         Glide.with(mContext)

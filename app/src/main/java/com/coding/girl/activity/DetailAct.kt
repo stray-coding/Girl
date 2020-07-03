@@ -9,17 +9,17 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
+import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.bumptech.glide.Glide
 import com.coding.girl.R
 import com.coding.girl.base.BaseActivity
+import com.coding.girl.dialog.InfoDialog
 import com.coding.girl.util.BitmapUtil
 import kotlinx.android.synthetic.main.activity_details.*
 
 
-class DetailActivity : BaseActivity() {
+class DetailAct : BaseActivity() {
     companion object {
         private const val REQ_PERMISSION = 200
     }
@@ -27,6 +27,7 @@ class DetailActivity : BaseActivity() {
     private lateinit var mBitmap: Bitmap
     private var mPicUrl = ""
     private var mPicName = ""
+    private var mDesc = ""
 
     override fun bindLayout(): Int {
         return R.layout.activity_details
@@ -42,41 +43,48 @@ class DetailActivity : BaseActivity() {
             mPicName = intent.extras!!.getString("name", "")
             if (!mPicName.endsWith(".jpg"))
                 mPicName = "$mPicName.jpg"
+            mDesc = intent.extras!!.getString("desc", "").replace("\n", "")
         }
 
         Glide.with(this)
             .load(mPicUrl)
             .into(img_detail_girl)
+
+        tv_desc.text = mDesc
     }
 
     override fun setListener() {
-        tv_back.setOnClickListener {
+        img_back.setOnClickListener {
             finish()
         }
-        tv_round.setOnClickListener {
-            val roundBitmap = RoundedBitmapDrawableFactory.create(
-                resources,
-                BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
-            )
-            roundBitmap.cornerRadius = 500f
-            Glide.with(this)
-                .load(roundBitmap)
-                .into(img_detail_girl)
-        }
-        tv_store_pic.setOnClickListener {
-            mBitmap = BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_PERMISSION
-                )
-            } else {
-                addBitmapToAlbum(mBitmap, mPicName)
-            }
+
+        img_details.setOnClickListener {
+            val infoDialog =
+                if (intent != null && intent.extras != null) {
+                    InfoDialog.newInstance(intent.extras!!)
+                } else {
+                    InfoDialog.newInstance(Bundle())
+                }
+
+            infoDialog.setOnItemClickListener(object : InfoDialog.OnItemClickListener {
+                override fun click(view: View) {
+                    mBitmap = BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
+                    if (ActivityCompat.checkSelfPermission(
+                            this@DetailAct,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        ActivityCompat.requestPermissions(
+                            this@DetailAct,
+                            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_PERMISSION
+                        )
+                    } else {
+                        addBitmapToAlbum(mBitmap, mPicName)
+                        infoDialog.dismiss()
+                    }
+                }
+            })
+            infoDialog.show(supportFragmentManager, "info")
         }
     }
 
@@ -99,12 +107,15 @@ class DetailActivity : BaseActivity() {
                 if (outputStream != null) {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     outputStream.close()
-                    Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show()
+                    showTip("保存成功")
                 }
+            } else {
+                Log.i(TAG, "保存失败,该图片已在图库中")
+                showTip("保存失败,该图片已在图库中")
             }
         } catch (e: Exception) {
             Log.e(TAG, "e:$e")
-            Toast.makeText(this, "未知错误，保存失败", Toast.LENGTH_SHORT).show()
+            showTip("未知错误，保存失败")
         }
     }
 
@@ -119,7 +130,7 @@ class DetailActivity : BaseActivity() {
                 if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     addBitmapToAlbum(mBitmap, mPicName)
                 } else {
-                    Toast.makeText(this, "权限不足，保存失败", Toast.LENGTH_SHORT).show()
+                    showTip("权限不足，保存失败")
                 }
         }
     }

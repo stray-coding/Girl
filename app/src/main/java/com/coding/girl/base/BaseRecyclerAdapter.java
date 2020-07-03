@@ -2,12 +2,11 @@ package com.coding.girl.base;
 
 
 import android.content.Context;
-
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +53,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         bindData(holder, position, mData.get(position));
     }
 
-    public T getItem(int pos) {
+    public T getItemData(int pos) {
         return mData.get(pos);
     }
 

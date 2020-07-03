@@ -6,11 +6,16 @@ package com.coding.girl.bean
  * @emil: 229101253@qq.com
  * @des:
  */
-data class GirlBean(
-    var counts: Int = 0,
+data class PageGirlBean(
+    /*请求页数*/
+    var page: Int = 0,
+    /*总页数*/
+    var page_count: Int = 0,
+    /*总数据size*/
+    var total_counts: Int = 0,
     var status: Int = 0,
     var data: List<DataBean> = arrayListOf()
-){
+) {
     /**
      * _id : 5e52aa7f8ad0cb82d1976166
      * author : 鸢媛

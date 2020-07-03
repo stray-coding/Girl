@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Girl</string>
-    <string name="save_pic">Save</string>
+    <string name="save_pic">Save Pic</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="bottom1">beauty</string>
+    <string name="bottom2">single</string>
+    <string name="bottom3">about</string>
 </resources>
