@@ -3,12 +3,12 @@ package com.coding.girl.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.coding.girl.R
 import com.coding.girl.activity.DetailAct
 import com.coding.girl.adapter.GirlAdapter
 import com.coding.girl.base.BaseFragment
+import com.coding.girl.base.LoadMoreRecyclerOnScrollListener
 import com.coding.girl.bean.PageGirlBean
 import kotlinx.android.synthetic.main.fragment_beauty.*
 import retrofit2.Call
@@ -68,29 +68,9 @@ class BeautyFragment : BaseFragment() {
             activity?.startActivity(intent)
         }
 
-        var lastVisibleItemPosition = 0
-        rv_girl.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val manager = rv_girl.layoutManager as StaggeredGridLayoutManager
-                    val visibleItemCount = manager.childCount
-                    val totalItemCount = rv_girl.adapter!!.itemCount
-                    if ((visibleItemCount > 0 && (lastVisibleItemPosition) >= totalItemCount - 1)) {
-                        Log.i(TAG, "onScrollStateChanged: ...");
-                        loadPic(false)
-                    }
-                }
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val manager = rv_girl.layoutManager as StaggeredGridLayoutManager
-                val lastPositions = IntArray(manager.spanCount)
-                manager.findLastCompletelyVisibleItemPositions(lastPositions)
-                if (lastPositions.isNotEmpty()) {
-                    lastVisibleItemPosition = lastPositions.max()!!
-                }
+        rv_girl.addOnScrollListener(object : LoadMoreRecyclerOnScrollListener() {
+            override fun loadMore() {
+                loadPic(false)
             }
         })
     }

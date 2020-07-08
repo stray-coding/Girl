@@ -21,14 +21,14 @@ import java.util.List;
  */
 
 public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerViewHolder> {
-    private List<T> mData;
+    public List<T> mData;
     public final Context mContext;
     private LayoutInflater mInflater;
     private OnItemClickListener mClickListener;
     private OnItemLongClickListener mLongClickListener;
 
     public BaseRecyclerAdapter(Context ctx, List<T> list) {
-        mData = (list != null) ? list : new ArrayList<T>();
+        mData = (list != null) ? list : new ArrayList<>();
         mContext = ctx;
         mInflater = LayoutInflater.from(ctx);
     }
@@ -74,7 +74,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     }
 
     public void setData(List<T> list) {
-        mData = (list != null) ? list : new ArrayList<T>();
+        mData = (list != null) ? list : new ArrayList<>();
         notifyDataSetChanged();
     }
 
