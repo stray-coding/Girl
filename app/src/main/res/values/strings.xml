@@ -6,4 +6,5 @@
     <string name="bottom1">beauty</string>
     <string name="bottom2">single</string>
     <string name="bottom3">about</string>
+    <string name="loading">loading</string>
 </resources>

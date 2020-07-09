@@ -8,7 +8,7 @@ import com.coding.girl.R
 import com.coding.girl.activity.DetailAct
 import com.coding.girl.adapter.GirlAdapter
 import com.coding.girl.base.BaseFragment
-import com.coding.girl.base.LoadMoreRecyclerOnScrollListener
+import com.coding.girl.base.LoadMoreOnScrollListener
 import com.coding.girl.bean.PageGirlBean
 import kotlinx.android.synthetic.main.fragment_beauty.*
 import retrofit2.Call
@@ -26,7 +26,7 @@ import retrofit2.http.Url
  * @des:
  */
 class BeautyFragment : BaseFragment() {
-    private var isLoadData = false
+    private var isLoadingData = false
 
     /*获取Girl图片URL的相关参数*/
     private val mCategory = "Girl"
@@ -53,6 +53,7 @@ class BeautyFragment : BaseFragment() {
 
     override fun initListener() {
         srl_refresh.setOnRefreshListener {
+            Log.i(TAG,"重新加载图片")
             loadPic(true)
         }
         mAdapter.setOnItemClickListener { _, pos ->
@@ -68,8 +69,12 @@ class BeautyFragment : BaseFragment() {
             activity?.startActivity(intent)
         }
 
-        rv_girl.addOnScrollListener(object : LoadMoreRecyclerOnScrollListener() {
+        rv_girl.addOnScrollListener(object : LoadMoreOnScrollListener() {
             override fun loadMore() {
+                if (srl_refresh.isRefreshing) {
+                    Log.i(TAG, "刷新中,禁止加载更多数据")
+                    return
+                }
                 loadPic(false)
             }
         })
@@ -77,18 +82,18 @@ class BeautyFragment : BaseFragment() {
 
     @Synchronized
     private fun loadPic(isRefresh: Boolean) {
-        if (isLoadData) {
+        if (isLoadingData) {
             Log.i(TAG, "数据正在加载中，请勿重复刷新")
             return
         }
         try {
-            isLoadData = true
+            isLoadingData = true
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://gank.io/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val request = retrofit.create(GetOnePic::class.java)
-
+            if (isRefresh) mPage = 1 else mPage++
             val url = getRequestUrl(mCategory, mType, mPage, mCount)
             val call = request.getCall(url)
             call.enqueue(object : Callback<PageGirlBean> {
@@ -96,14 +101,11 @@ class BeautyFragment : BaseFragment() {
                     call: Call<PageGirlBean>,
                     response: Response<PageGirlBean>
                 ) {
-                    Log.i(TAG, "{$response}")
-                    Log.i(TAG, "{${response.body()}}")
+                    Log.i(TAG, "response: {$response}")
+                    Log.i(TAG, "response.body(): {${response.body()}}")
                     val body = response.body() as PageGirlBean
                     if (isRefresh) {
                         mDataList.clear()
-                        mPage = 1
-                    } else {
-                        mPage++
                     }
                     for (item in body.data) {
                         if (!mDataList.contains(item)) {
@@ -112,25 +114,24 @@ class BeautyFragment : BaseFragment() {
                         } else {
                             Log.i(TAG, "数据中已含有该图片:{${item._id}}")
                         }
-
                     }
                     mAdapter.notifyDataSetChanged()
                     srl_refresh.isRefreshing = false
-                    isLoadData = false
+                    isLoadingData = false
                 }
 
                 override fun onFailure(call: Call<PageGirlBean>, t: Throwable) {
                     Log.e(TAG, "onFailure$t")
                     showTip("数据加载失败")
                     srl_refresh.isRefreshing = false
-                    isLoadData = false
+                    isLoadingData = false
                 }
             })
         } catch (e: Exception) {
             Log.e(TAG, "e:$e")
-            srl_refresh.isRefreshing = false
             showTip("数据加载失败")
-            isLoadData = false
+            srl_refresh.isRefreshing = false
+            isLoadingData = false
         }
     }
 
