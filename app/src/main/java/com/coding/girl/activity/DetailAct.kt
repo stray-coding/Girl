@@ -9,12 +9,11 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import com.coding.girl.R
 import com.coding.girl.base.BaseActivity
-import com.coding.girl.dialog.InfoDialog
 import com.coding.girl.util.BitmapUtil
 import kotlinx.android.synthetic.main.activity_details.*
 
@@ -59,15 +58,12 @@ class DetailAct : BaseActivity() {
         }
 
         img_details.setOnClickListener {
-            val infoDialog =
-                if (intent != null && intent.extras != null) {
-                    InfoDialog.newInstance(intent.extras!!)
-                } else {
-                    InfoDialog.newInstance(Bundle())
-                }
-
-            infoDialog.setOnItemClickListener(object : InfoDialog.OnItemClickListener {
-                override fun click(view: View) {
+            val dialogBuild = AlertDialog.Builder(this)
+            dialogBuild.setTitle("保存图片")
+                .setMessage("是否将图片保存到本地相册？")
+                .setPositiveButton(
+                    "保存"
+                ) { dialog, which ->
                     mBitmap = BitmapUtil.drawable2Bitmap(img_detail_girl.drawable)
                     if (ActivityCompat.checkSelfPermission(
                             this@DetailAct,
@@ -80,11 +76,10 @@ class DetailAct : BaseActivity() {
                         )
                     } else {
                         addBitmapToAlbum(mBitmap, mPicName)
-                        infoDialog.dismiss()
                     }
                 }
-            })
-            infoDialog.show(supportFragmentManager, "info")
+                .setNegativeButton("取消", null)
+                .show()
         }
     }
 
